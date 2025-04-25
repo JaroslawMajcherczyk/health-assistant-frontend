@@ -14,6 +14,7 @@ import { RecordingsUpload } from './pages/dashboard/recordings_upload/Recordings
 import About from './pages/about/About';
 import ScrollToTop from './pages/scroll_to_top/ScrollToTop';
 import { Profile } from './pages/dashboard/profile/Profile';
+import { RequireAuth } from './RequireAuth';
 
 
 function App() {
@@ -31,13 +32,21 @@ function App() {
         </Route>
 
         {/* Osobny layout dla dashboardu */}
-        <Route path="/dashboard" element={<DashboardLayout />}>
-          <Route index element={<Dashboard />} />
-          <Route path="patients" element={<PatientManagement />} />
-          <Route path="card" element={<PatientCard />} />
-          <Route path="recordings" element={<RecordingsUpload />} />
-          <Route path="/dashboard/profile" element={<Profile />} />
-        </Route>
+      <Route
+        path="/dashboard"
+        element={
+          <RequireAuth>
+            <DashboardLayout />
+          </RequireAuth>
+        }
+      >
+        <Route index element={<Dashboard />} />
+        <Route path="patients" element={<PatientManagement />} />
+        <Route path="card" element={<PatientCard />} />
+        <Route path="recordings" element={<RecordingsUpload />} />
+        <Route path="profile" element={<Profile />} />
+      </Route>
+
       </Routes>
     </BrowserRouter>
     </>
