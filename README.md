@@ -1,12 +1,33 @@
-# React + Vite
+🏥 Health Assistant – Inteligentna Platforma dla Lekarzy
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Health Assistant to aplikacja webowa zbudowana w technologii React.js, która wspiera lekarzy w zarządzaniu pacjentami,
+analizie danych medycznych i automatyzacji pracy za pomocą sztucznej inteligencji (AI).
 
-Currently, two official plugins are available:
+1. Funkcjonalności
+- Logowanie przez Microsoft Entra ID (Azure AD)
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+2. Technologie
+- Frontend: React.js (Vite) + Sass
+- Autoryzacja: Microsoft Entra ID
+- Routing: react-router-dom
 
-## Expanding the ESLint configuration
+3. Jak uruchomić projekt lokalnie
+  Wymagania
+    - Node.js zainstalowany
+    - Konto w Microsoft Entra (Azure)
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+  Rejestracja aplikacji w Entra
+    - Przejdź na: https://entra.microsoft.com/
+    - Zarejestruj nową aplikację
+    - Skopiuj:
+    - Application (client) ID
+    - Directory (tenant) ID lub użyj organizations
+    - Ustaw:
+    - Redirect URI: http://localhost:5173/
+
+   Utwórz plik .env, wzór w .env_example
+
+4. Instalacja zależności
+    - npm install
+5. Uruchomienie lokalnego serwera dla aplikacji, 
+    - npm run dev  
