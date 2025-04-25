@@ -1,0 +1,78 @@
+.dashboard-wrapper {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+  }
+  
+  /* Górny pasek */
+  .dashboard-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #0077cc;
+    color: white;
+    padding: 1rem 2rem;
+  
+    h2 {
+      margin: 0;
+    }
+  
+    button {
+      padding: 0.5rem 1rem;
+      background-color: #d9534f;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+  
+      &:hover {
+        background-color: #c9302c;
+      }
+    }
+  }
+  
+  /* Główna część: sidebar + content */
+  .dashboard-layout {
+    display: flex;
+    flex: 1;
+  }
+  
+  /* Panel boczny */
+  .sidebar {
+    width: 250px;
+    background-color: #f2f2f2;
+    padding: 2rem;
+    display: flex;
+    flex-direction: column;
+  
+    nav {
+      flex: 1;
+    }
+  
+    ul {
+      list-style: none;
+      padding: 0;
+      flex-direction: column;
+      li {
+        margin-bottom: 1rem;
+  
+        a {
+          text-decoration: none;
+          color: #333;
+  
+          &.active {
+            font-weight: bold;
+            color: #0077cc;
+          }
+        }
+      }
+    }
+  }
+  
+  /* Zawartość dashboardu */
+  .dashboard-content {
+    flex: 1;
+    padding: 2rem;
+    background-color: #fff;
+  }
+  
