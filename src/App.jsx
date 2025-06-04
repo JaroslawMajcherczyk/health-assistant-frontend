@@ -15,6 +15,7 @@ import About from './pages/about/About';
 import ScrollToTop from './pages/scroll_to_top/ScrollToTop';
 import { Profile } from './pages/dashboard/profile/Profile';
 import { RequireAuth } from './RequireAuth';
+import { RecordManagment } from './pages/dashboard/record_managment/RecordManagment';
 
 
 function App() {
@@ -44,6 +45,7 @@ function App() {
         <Route path="patients" element={<PatientManagement />} />
         <Route path="card" element={<PatientCard />} />
         <Route path="recordings" element={<RecordingsUpload />} />
+        <Route path="records" element={<RecordManagment />} />
         <Route path="profile" element={<Profile />} />
       </Route>
 

@@ -28,6 +28,7 @@ export const DashboardLayout = () => {
                 <li><NavLink to="/dashboard/patients">Zarządzanie Pacjentami</NavLink></li>
                 <li><NavLink to="/dashboard/card">Karta Pacjenta</NavLink></li>
                 <li><NavLink to="/dashboard/recordings">Dodanie Nagrań</NavLink></li>
+                <li><NavLink to="/dashboard/records">Zarządzanie Nagraniami</NavLink></li>
               </ul>
         </aside>
         <main className="dashboard-content">
