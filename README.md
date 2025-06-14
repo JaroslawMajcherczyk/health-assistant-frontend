@@ -68,14 +68,14 @@ Aplikacja powinna być dostępna pod `http://localhost:5173/`
 
 ---
 
-## 🛡️ Zabezpieczenia
+### 6. 🛡️ Zabezpieczenia
 
 - Dostęp do `/dashboard` i jego podstron (np. `patients`, `card`, `recordings`, `profile`) jest chroniony – możliwy **tylko po zalogowaniu przez Entra**
 - Użyto komponentu `RequireAuth` do ochrony tras
 
 ---
 
-## 📁 Struktura projektu
+### 7. 📁 Struktura projektu
 
 ```
 src/
@@ -93,3 +93,51 @@ src/
 ```
 
 ---
+
+### 8. 🧠 Mikroserwisy i ich funkcje
+- 🎧 ha-minio – przechowywanie i pobieranie nagrań audio
+
+- 🧾 ha-postgres – obsługa bazy danych PostgreSQL (informacje o pacjentach)
+
+- 🗣️ ha-speach-to-text – przekształcanie nagrania głosowego na tekst
+
+- 🌐 ha-translator – tłumaczenie tekstu na język angielski (Azure Translator)
+
+-  🏥 ha-health – ekstrakcja informacji medycznych z tekstu (Azure Text Analytics)
+
+### 9. 🔄 Komunikacja frontend ↔ backend
+
+server: {
+  proxy: {
+    '/api/minio':     'http://localhost:8081',
+    '/api/postgres':  'http://localhost:8082',
+    '/api/stt':       'http://localhost:8083',
+    '/api/translate': 'http://localhost:8084',
+    '/api/health':    'http://localhost:8085/health'
+  }
+}
+
+### 10. 🔁 Przykładowy przepływ danych
+
+1. Lekarz nagrywa notatkę → plik trafia do ha-minio
+2. Nagranie jest analizowane przez ha-speach-to-text i zamieniane na tekst
+3. Tekst tłumaczony jest na angielski przez ha-translator
+4. Przetłumaczony tekst przesyłany jest do ha-health, który wyodrębnia dane:
+
+   - firstName, lastName, age, gender
+   - symptoms, diagnosis, treatment
+
+5. Informacje są zapisywane w ha-postgres jako karta pacjenta
+
+### 11. 🧪 Jak uruchomić backend lokalnie
+1. 🔧 Wymagania
+   Java 17+
+   Maven (./mvnw)
+   Docker (MinIO, PostgreSQL)
+
+2. 🛠️ Uruchamianie mikroserwisów
+   Każdy mikroserwis uruchamiasz osobno:
+      cd ha-minio
+      ./mvnw spring-boot:run
+
+![flow](image.png)

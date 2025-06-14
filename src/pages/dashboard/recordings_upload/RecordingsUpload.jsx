@@ -22,70 +22,72 @@ export const RecordingsUpload = () => {
       .catch(() => setMinioFiles([]));
   }, [refreshList]);
 
-  // Start recording
-  const handleStartRecording = async () => {
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      const mediaRecorder = new window.MediaRecorder(stream, { mimeType: 'audio/webm' });
 
-      mediaRecorderRef.current = mediaRecorder;
-      audioChunksRef.current = [];
 
-      mediaRecorder.ondataavailable = (event) => {
-        if (event.data.size > 0) {
-          audioChunksRef.current.push(event.data);
+const handleStartRecording = async () => {
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    const mediaRecorder = new window.MediaRecorder(stream, { mimeType: 'audio/webm' });
+
+    mediaRecorderRef.current = mediaRecorder;
+    audioChunksRef.current = [];
+
+    mediaRecorder.ondataavailable = (event) => {
+      if (event.data.size > 0) {
+        audioChunksRef.current.push(event.data);
+      }
+    };
+
+    mediaRecorder.onstop = async () => {
+      const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/webm' });
+      setAudioBlob(audioBlob);
+      const url = URL.createObjectURL(audioBlob);
+      setAudioUrl(url);
+
+      // Konwersja webm → WAV
+      const wavBlob = await convertWebMToWav(audioBlob);
+      setWavBlob(wavBlob);
+
+      // Wyczyszczenie wyboru nagrania z Minio
+      setSelectedMinioFile('');
+      setSelectedMinioBlob(null);
+
+      // ✅ Automatyczny upload po konwersji (z opóźnieniem)
+      setTimeout(async () => {
+        const timestamp = new Date().toISOString().replace(/[-:.TZ]/g, '').slice(0, 14);
+        const filename = `${timestamp}.wav`;
+        const formData = new FormData();
+        formData.append('file', wavBlob, filename);
+
+        try {
+          const response = await fetch('/api/minio/audio/upload', {
+            method: 'POST',
+            body: formData,
+          });
+          if (!response.ok) throw new Error('Błąd uploadu do Minio!');
+          alert('Plik przesłany do Minio!');
+          setRefreshList(r => !r);
+        } catch (err) {
+          alert('Nie udało się przesłać nagrania: ' + err.message);
         }
-      };
+      }, 1000);
+    };
 
-      mediaRecorder.onstop = async () => {
-        const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/webm' });
-        setAudioBlob(audioBlob);
-        const url = URL.createObjectURL(audioBlob);
-        setAudioUrl(url);
-
-        // Konwersja webm → WAV
-        const wavBlob = await convertWebMToWav(audioBlob);
-        setWavBlob(wavBlob);
-        // Wyczyszczenie wyboru nagrania z Minio
-        setSelectedMinioFile('');
-        setSelectedMinioBlob(null);
-      };
-
-      mediaRecorder.start();
-      setIsRecording(true);
-    } catch (error) {
-      alert('Błąd podczas uruchamiania nagrywania audio: ' + error.message);
-    }
-  };
+    mediaRecorder.start();
+    setIsRecording(true);
+  } catch (error) {
+    alert('Błąd podczas uruchamiania nagrywania audio: ' + error.message);
+  }
+};
 
   // Stop recording
-  const handleStopRecording = async () => {
-    if (mediaRecorderRef.current) {
-      mediaRecorderRef.current.stop();
-      setIsRecording(false);
+const handleStopRecording = () => {
+  if (mediaRecorderRef.current) {
+    mediaRecorderRef.current.stop();
+    setIsRecording(false);
+  }
+};
 
-      setTimeout(async () => {
-        if (wavBlob) {
-          const timestamp = new Date().toISOString().replace(/[-:.TZ]/g, '').slice(0, 14);
-          const filename = `${timestamp}.wav`;
-          const formData = new FormData();
-          formData.append('file', wavBlob, filename);
-
-          try {
-            const response = await fetch('/api/minio/audio/upload', {
-              method: 'POST',
-              body: formData,
-            });
-            if (!response.ok) throw new Error('Błąd uploadu do Minio!');
-            alert('Plik przesłany do Minio!');
-            setRefreshList(r => !r); // Odśwież listę plików
-          } catch (err) {
-            alert('Nie udało się przesłać nagrania: ' + err.message);
-          }
-        }
-      }, 200);
-    }
-  };
 
   // Konwersja WebM (Opus) → WAV
   const convertWebMToWav = async (webmBlob) => {

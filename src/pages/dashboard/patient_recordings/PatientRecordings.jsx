@@ -3,11 +3,19 @@ import React, { useEffect, useState } from 'react';
 export const PatientRecordings = () => {
   const [patients, setPatients] = useState([]);
 
-  useEffect(() => {
-    fetch('/api/health/recordings')
-      .then(res => res.json())
-      .then(data => setPatients(data));
-  }, []);
+useEffect(() => {
+  fetch('/api/health/recordings')
+    .then(res => res.json())
+    .then(data => {
+      console.log("Odebrano:", data);
+      setPatients(Array.isArray(data) ? data : []);
+    })
+    .catch(err => {
+      console.error("Błąd przy pobieraniu:", err);
+      setPatients([]);
+    });
+}, []);
+
 
   const handleAccept = async (idx) => {
     const p = patients[idx];
