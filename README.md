@@ -79,22 +79,38 @@ Aplikacja powinna być dostępna pod `http://localhost:5173/`
 
 ```
 src/
-├── assets/                     # Obrazy i logo
-├── components/                 # Komponenty wspólne (np. RequireAuth)
+├── assets/                        # Zasoby statyczne (np. obrazy, pliki)
 ├── pages/
-│   ├── home/                   # Strona główna
-│   ├── about/                  # O aplikacji
-│   ├── contact/                # Kontakt
-│   ├── layout/                 # Layout nawigacyjny
-│   ├── dashboard_layout/       # Layout dla zalogowanych
-│   └── dashboard/              # Zawartość dashboardu (patients, card, recordings)
-├── App.jsx
-└── main.jsx
+│   ├── about/                     # Strona "O nas"
+│   ├── contact/                   # Strona kontaktowa
+│   ├── dashboard/                # Dashboard dla użytkownika
+│   │   ├── patient_card/          # Karta pacjenta
+│   │   ├── patient_management/    # Zarządzanie pacjentami
+│   │   ├── patient_recordings/    # Nagrania pacjentów
+│   │   ├── profile/               # Profil użytkownika
+│   │   ├── record_managment/      # Zarządzanie zapisami
+│   │   └── recordings_upload/     # Wgrywanie nagrań
+│   ├── dashboard_layout/         # Layout dashboardu
+│   ├── footer/                   # Stopka
+│   ├── home/                     # Strona główna
+│   │   ├── health_intro_section/  # Sekcja wprowadzająca zdrowie
+│   │   └── mission_statement/     # Misja aplikacji
+│   ├── layout/                   # Ogólny layout nawigacyjny
+│   ├── no_page/                  # Strona 404
+│   └── scroll_to_top/           # Komponent przewijania na górę
+├── App.jsx                       # Główny komponent aplikacji
+├── App.scss                      # Główne style aplikacji
+├── authConfig.js                 # Konfiguracja uwierzytelniania (np. Entra)
+├── main.jsx                      # Punkt wejścia aplikacji
+├── RequireAuth.jsx               # Komponent zabezpieczający dostęp do stron
+.env                              # Plik środowiskowy
+.env_example                      # Przykładowy plik środowiskowy
+
 ```
 
 ---
 
-### 8. 🧠 Mikroserwisy i ich funkcje
+# 8. 🧠 Mikroserwisy i ich funkcje
 - 🎧 ha-minio – przechowywanie i pobieranie nagrań audio
 
 - 🧾 ha-postgres – obsługa bazy danych PostgreSQL (informacje o pacjentach)
@@ -107,7 +123,7 @@ src/
 
 ---
 
-### 9. 🔄 Komunikacja frontend ↔ backend
+# 9. 🔄 Komunikacja frontend ↔ backend
 
 ```
 server: {
@@ -123,7 +139,7 @@ server: {
 ```
 ---
 
-### 10. 🔁 Przykładowy przepływ danych
+# 10. 🔁 Przykładowy przepływ danych
 
 1. Lekarz nagrywa notatkę → plik trafia do ha-minio
 2. Nagranie jest analizowane przez ha-speach-to-text i zamieniane na tekst
@@ -137,7 +153,7 @@ server: {
 
 ---
 
-### 11. 🧪 Jak uruchomić backend lokalnie
+# 11. 🧪 Jak uruchomić backend lokalnie
 1. 🔧 Wymagania
    Java 17+
    Maven (./mvnw)
@@ -150,7 +166,7 @@ server: {
 
 ---
 
-### 12. 🧭 Architektura systemu
+# 12. 🧭 Architektura systemu
 
 Poniżej przedstawiono ogólny przepływ danych i komunikację pomiędzy komponentami systemu:
 
@@ -166,11 +182,30 @@ Na diagramie:
 
 ---
 
-### 13. 🔐 Autoryzacja – Microsoft Entra ID - Frontend
+# 13.  🐳 Dokeryzacja PostgreSQL i MinIO
+
+W projekcie wykorzystujemy kontenery Docker do lokalnego uruchamiania bazy danych PostgreSQL oraz systemu plików obiektowych MinIO (S3-compatible). Oba serwisy są konfigurowane za pomocą pliku docker-compose.yml.
+
+![alt text](image-8.png)
+
+---
+
+# 14. ☁️ Przechowywanie plików audio w MinIO
+
+W projekcie wykorzystujemy MinIO jako lokalny, kompatybilny z S3 system przechowywania plików (np. nagrań audio).
+
+![alt text](image-9.png)
+
+Przechowywane pliki audio znajdują się w zasobniku (bucket) audio-bucket, do którego dostęp możliwy jest przez MinIO Web UI lub z poziomu aplikacji backendowej.
+
+---
+
+
+# 15. 🔐 Autoryzacja – Microsoft Entra ID - Frontend
 
 Autoryzacja w aplikacji Health Assistant jest realizowana przez bibliotekę @azure/msal-react, która integruje się z Microsoft Entra (Azure Active Directory). Dzięki temu dostęp do /dashboard mają tylko zalogowani użytkownicy organizacji.
 
-   ## 🧠 Inicjalizacja w aplikacji
+   ### 🧠 Inicjalizacja w aplikacji
 W pliku main.jsx tworzony jest obiekt PublicClientApplication i przekazywany przez MsalProvider:
 
 ```
@@ -190,11 +225,11 @@ createRoot(document.getElementById('root')).render(
 
 ---
 
-### 14. 🎧 ha-minio – Przechowywanie nagrań audio
+# 16. 🎧 ha-minio – Przechowywanie nagrań audio
 
 Serwis ha-minio odpowiada za upload, pobieranie, listowanie i usuwanie plików audio w formacie .wav. Pliki te są przechowywane w systemie MinIO, a opcjonalnie towarzyszą im pliki .meta.json zawierające dodatkowe metadane (np. wyświetlana nazwa nagrania).
 
-## 🎮 AudioController.java – kontroler zarządzający nagraniami audio
+### 🎮 AudioController.java – kontroler zarządzający nagraniami audio
 
 Kontroler AudioController w mikroserwisie ha-minio udostępnia REST API do operacji na plikach .wav przechowywanych w systemie MinIO. Umożliwia dodawanie, pobieranie, listowanie i usuwanie nagrań audio.
 
@@ -210,11 +245,11 @@ public List<String> list()
 ```
 ---
 
-### 15. 🧾 ha-postgres – Obsługa danych pacjentów (PostgreSQL)
+# 17. 🧾 ha-postgres – Obsługa danych pacjentów (PostgreSQL)
 
 Mikroserwis ha-postgres odpowiada za zarządzanie danymi pacjentów i historią ich wizyt lekarskich. Używa bazy danych PostgreSQL do trwałego przechowywania rekordów, a cały dostęp realizowany jest poprzez REST API.
 
-## 🎮 PatientController.java – kontroler zarządzający pacjentami
+### 🎮 PatientController.java – kontroler zarządzający pacjentami
 
 Kontroler udostępnia zestaw endpointów do tworzenia, edytowania, usuwania i pobierania pacjentów oraz przypisanych do nich wizyt.
 
@@ -225,7 +260,7 @@ Kontroler udostępnia zestaw endpointów do tworzenia, edytowania, usuwania i po
 
 ---
 
-### 16. 🗣️ ha-speach-to-text – Rozpoznawanie mowy (Speech-to-Text)
+# 18. 🗣️ ha-speach-to-text – Rozpoznawanie mowy (Speech-to-Text)
 
 Mikroserwis ha-speach-to-text odpowiada za transkrypcję nagrań audio do tekstu. Wykorzystuje usługę Azure Speech-to-Text, aby przekształcić mowę w języku polskim na tekst, a następnie (opcjonalnie) tłumaczy go na angielski poprzez mikroserwis ha-translator.
 
@@ -237,7 +272,7 @@ Mikroserwis ha-speach-to-text odpowiada za transkrypcję nagrań audio do tekstu
 
 ---
 
-### 17. 🌐 ha-translator – Tłumaczenie tekstu (Azure Translator)
+# 19. 🌐 ha-translator – Tłumaczenie tekstu (Azure Translator)
 
 Mikroserwis ha-translator realizuje tłumaczenie tekstu z języka polskiego na angielski przy użyciu usługi Microsoft Azure Translator. Jest wykorzystywany m.in. przez ha-speach-to-text oraz frontend React w celu przetłumaczenia opisu medycznego przed analizą NLP.
 
@@ -261,7 +296,7 @@ Mikroserwis ha-translator realizuje tłumaczenie tekstu z języka polskiego na a
 
 ---
 
-### 18. 🏥 ha-health – Analiza medyczna tekstu (Entity Recognition)
+# 20. 🏥 ha-health – Analiza medyczna tekstu (Entity Recognition)
 
 Mikroserwis ha-health wykorzystuje usługę Azure Text Analytics (Language API) do rozpoznawania encji medycznych i kluczowych fraz w tekstach klinicznych. Jego celem jest automatyczne wyodrębnienie danych pacjenta z przetłumaczonego wcześniej opisu wizyty (np. objawów, diagnozy, leczenia).
 
@@ -289,7 +324,7 @@ Po utworzeniu PatientInfo, mikroserwis:
 - Używa RestTemplate i nagłówka Content-Type: application/json
 - Zwraca status HTTP (200, 400 itp.)
 
-## 3. Przykład działania (pipeline)
+### 3. Przykład działania (pipeline)
 1. Tekst (np. z transkrypcji) trafia do ha-health
 2. Azure Text Analytics rozpoznaje encje (objawy, leki, diagnozy itp.)
 3. Dane są konwertowane do obiektu PatientInfo
@@ -298,7 +333,7 @@ Po utworzeniu PatientInfo, mikroserwis:
 
 ---
 
-### 19. 🖼️ Przebieg działania aplikacji – Zrzuty ekranu
+# 21. 🖼️ Przebieg działania aplikacji – Zrzuty ekranu
 
 Poniżej przedstawiono kluczowe etapy działania aplikacji Health Assistant, od logowania aż po analizę nagrań i zarządzanie pacjentami.
 
@@ -337,7 +372,7 @@ W tej zakładce użytkownik widzi listę wszystkich zapisanych plików głosowyc
 
 ---
 
-### 20. ✅ Wnioski
+# 22. ✅ Wnioski
 
 Realizacja aplikacji `Health Assistant` pozwoliła zapoznać się z możliwościami usług `Microsoft Azure`, takimi jak Entra ID, Speech-to-Text i Text Analytics. Integracja tych rozwiązań z architekturą mikroserwisową opartą na Spring Boot oraz frontendem w React.js umożliwiła stworzenie funkcjonalnej aplikacji wspierającej lekarzy. Praca nad projektem poszerzyła wiedzę zarówno z zakresu technologii chmurowych, jak i budowy skalowalnych systemów webowych.
 
