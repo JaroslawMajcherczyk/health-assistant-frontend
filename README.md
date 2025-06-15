@@ -1,5 +1,9 @@
 # 🏥 Health Assistant – Inteligentna Platforma dla Lekarzy
 
+# Grupa projaktowa:
+ 1. Jarosław Majcherczyk
+ 2. Sebstian Magnowski 
+
 **Health Assistant** to aplikacja webowa zbudowana w technologii **React.js**, która wspiera lekarzy w zarządzaniu pacjentami,
 analizie danych medycznych i automatyzacji pracy za pomocą sztucznej inteligencji (AI).
 
